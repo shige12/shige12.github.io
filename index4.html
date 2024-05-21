@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logistic Regression Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        label, input, select {
+            display: block;
+            margin: 10px 0;
+        }
+        button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Logistic Regression Prediction</h1>
+    <label for="rs">rs (0-1):</label>
+    <input type="number" id="rs" step="any" min="0" max="1">
+
+    <label for="age">age:</label>
+    <input type="number" id="age" step="any">
+
+    <label for="sex">sex (男: 1, 女: 0):</label>
+    <select id="sex">
+        <option value="0">0</option>
+        <option value="1">1</option>
+    </select>
+
+    <button onclick="predict()">Predict</button>
+
+    <p id="result"></p>
+
+    <script>
+        const rsCoef = 3.491295;
+        const ageCoef = -0.027877;
+        const sexCoef = -0.565515;
+        const intercept = -0.03990046;
+
+        function logisticRegressionPredict(rsValue, ageValue, sexValue) {
+            const linearCombination = intercept + rsCoef * rsValue + ageCoef * ageValue + sexCoef * sexValue;
+            const probability = 1 / (1 + Math.exp(-linearCombination));
+            return probability;
+        }
+
+        function predict() {
+            const rsValue = parseFloat(document.getElementById('rs').value);
+            const ageValue = parseFloat(document.getElementById('age').value);
+            const sexValue = parseFloat(document.getElementById('sex').value);
+
+            if (isNaN(rsValue) || isNaN(ageValue) || isNaN(sexValue)) {
+                alert("Please enter valid numbers");
+                return;
+            }
+
+            if (rsValue < 0 || rsValue > 1) {
+                alert("rs value must be between 0 and 1");
+                return;
+            }
+
+            const predictedProbability = logisticRegressionPredict(rsValue, ageValue, sexValue);
+            document.getElementById('result').innerText = `Predicted Probability: ${predictedProbability.toFixed(4)}`;
+        }
+    </script>
+</body>
+</html>
