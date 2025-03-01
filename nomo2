@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态 Nomo 图 - 逻辑回归预测</title>
+    <style>
+        body {
+            font-family: '微软雅黑', sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+       .container {
+            background: #ffffff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 800px;
+        }
+        /* 新增图片样式 */
+        img {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            display: block;
+            margin: 10px auto;
+        }
+       .slider-container {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+       .slider-container label {
+            flex-basis: 100%;
+            margin-bottom: 5px;
+        }
+       .slider-container input[type="range"] {
+            flex-basis: calc(70% - 20px);
+            margin-bottom: 15px;
+        }
+       .slider-container input[type="number"] {
+            flex-basis: calc(30% - 20px);
+            margin-bottom: 15px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+            color: #007bff;
+        }
+        #error {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+        #note {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 20px;
+        }
+       .explanation {
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <select id="languageSelector" onchange="changeLanguage()">
+            <option value="zh-CN">中文</option>
+            <option value="en">英文</option>
+        </select>
+        <h1 id="title">逻辑回归预测</h1>
+        <!-- 插入图片 -->
+        <img src="image.png" alt="相关图片">
+        <div class="slider-container">
+            <label for="rs" id="rsLabel">rs (放射组学评分，取值范围 0 - 1):</label>
+            <input type="range" id="rs" min="0" max="1" step="0.01" value="0.5" oninput="updateValue('rs', this.value)">
+            <input type="number" id="rsInput" min="0" max="1" step="0.01" value="0.5" oninput="updateSlider('rs', this.value)">
+            <label for="age" id="ageLabel">年龄:</label>
+            <input type="range" id="age" min="20" max="80" step="1" value="50" oninput="updateValue('age', this.value)">
+            <input type="number" id="ageInput" min="20" max="80" step="1" value="50" oninput="updateSlider('age', this.value)">
+            <label for="sex" id="sexLabel">性别 (男: 0, 女: 1):</label>
+            <input type="range" id="sex" min="0" max="1" step="1" value="0" oninput="updateValue('sex', this.value)">
+            <input type="number" id="sexInput" min="0" max="1" step="1" value="0" oninput="updateSlider('sex', this.value)">
+        </div>
+        <button id="predictButton">开始预测</button>
+        <p id="result"></p>
+        <p id="error"></p>
+        <p id="note">该模型的数据仅来自粤西地区，若不同地区可能预测概率有所差异，仅供参考</p>
+        <div class="explanation" id="explanation"></div>
+    </div>
+    <script>
+        // 定义语言数据
+        const languages = {
+            "zh-CN": {
+                title: "逻辑回归预测",
+                rsLabel: "rs (放射组学评分，取值范围 0 - 1):",
+                ageLabel: "年龄:",
+                sexLabel: "性别 (男: 0, 女: 1):",
+                predictButton: "开始预测",
+                errorNaN: "请输入有效的数字",
+                errorRsRange: "rs 值必须在 0 到 1 之间",
+                resultPrefix: "预测概率: ",
+                note: "该模型的数据仅来自粤西地区，若不同地区可能预测概率有所差异，仅供参考",
+                rsText: "放射组学评分",
+                ageText: "年龄",
+                sexText: "性别",
+                probabilityText: "概率",
+                explanation: `
+                    <p><strong>放射组学评分（rs）</strong>：放射组学是一种从医学影像（如 CT、MRI 等）中提取大量定量特征的技术。放射组学评分综合了这些特征，用于评估疾病的发生、发展和预后等情况。评分范围在 0 - 1 之间，较高的评分可能表示疾病发生或进展的可能性相对较高。</p>
+                    <p><strong>预测概率的含义</strong>：此预测概率是基于输入的放射组学评分、年龄和性别等因素，通过逻辑回归模型计算得出的某一特定事件（如疾病发生）的可能性。例如，预测概率为 0.8 表示在当前输入的条件下，发生该事件的可能性为 80%。</p>
+                    <p><strong>预防或注意事项</strong>：
+                        <ul>
+                            <li>保持健康的生活方式，包括均衡饮食、适量运动、戒烟限酒等。</li>
+                            <li>定期进行体检，尤其是针对相关疾病的筛查。</li>
+                            <li>如果预测概率较高，建议及时咨询专业医生，进行进一步的检查和评估。</li>
+                        </ul>
+                    </p>
+                `
+            },
+            "en": {
+                title: "Logistic Regression Prediction",
+                rsLabel: "rs (Radiomics Score, Range: 0 - 1):",
+                ageLabel: "Age:",
+                sexLabel: "Gender (Male: 0, Female: 1):",
+                predictButton: "Start Prediction",
+                errorNaN: "Please enter valid numbers",
+                errorRsRange: "rs value must be between 0 and 1",
+                resultPrefix: "Predicted Probability: ",
+                note: "The data for this model is only from the western part of Guangdong. The predicted probability may vary in different regions. This is for reference only.",
+                rsText: "Radiomics Score",
+                ageText: "Age",
+                sexText: "Gender",
+                probabilityText: "Probability",
+                explanation: `
+                    <p><strong>Radiomics Score (rs)</strong>: Radiomics is a technique that extracts a large number of quantitative features from medical images (such as CT, MRI, etc.). The radiomics score combines these features to evaluate the occurrence, development, and prognosis of diseases. The score ranges from 0 to 1, and a higher score may indicate a relatively higher probability of disease occurrence or progression.</p>
+                    <p><strong>Meaning of the Predicted Probability</strong>: This predicted probability is calculated by a logistic regression model based on the input radiomics score, age, and gender, representing the likelihood of a specific event (such as disease occurrence). For example, a predicted probability of 0.8 means that under the current input conditions, the probability of the event occurring is 80%.</p>
+                    <p><strong>预防或注意事项</strong>：
+                        <ul>
+                            <li>Maintain a healthy life方式, including a balanced diet, regular exercise, smoking cessation, and moderate alcohol consumption.</li>
+                            <li>Undergo regular physical examinations, especially screening for relevant diseases.</li>
+                            <li>If the predicted probability is high, it is recommended to consult a professional doctor in a timely manner for further examination and evaluation.</li>
+                        </ul>
+                    </p>
+                `
+            }
+        };
+        // 逻辑回归模型的系数
+        const rsCoef = 3.491295;
+        const ageCoef = -0.027877;
+        const sexCoef = -0.565515;
+        const intercept = -0.03990046;
+        // 计算预测概率
+        function logisticRegressionPredict(rsValue, ageValue, sexValue) {
+            const linearCombination = intercept + rsCoef * rsValue + ageCoef * ageValue + sexCoef * sexValue;
+            const probability = 1 / (1 + Math.exp(-linearCombination));
+            return probability;
+        }
+        // 同步滑块和输入框的值
+        function updateValue(variable, value) {
+            document.getElementById(`${variable}Input`).value = value;
+        }
+        function updateSlider(variable, value) {
+            document.getElementById(`${variable}`).value = value;
+        }
+        // 切换语言的函数
+        function changeLanguage() {
+            const selectedLang = document.getElementById('languageSelector').value;
+            const langData = languages[selectedLang];
+            document.getElementById('title').innerText = langData.title;
+            document.getElementById('rsLabel').innerText = langData.rsLabel;
+            document.getElementById('ageLabel').innerText = langData.ageLabel;
+            document.getElementById('sexLabel').innerText = langData.sexLabel;
+            document.getElementById('predictButton').innerText = langData.predictButton;
+            document.getElementById('note').innerText = langData.note;
+            document.getElementById('explanation').innerHTML = langData.explanation;
+        }
+        // 点击预测按钮触发的函数
+        function predict() {
+            const rsValue = parseFloat(d3.select("#rs").property("value"));
+            const ageValue = parseFloat(d3.select("#age").property("value"));
+            const sexValue = parseFloat(d3.select("#sex").property("value"));
+            const errorElement = document.getElementById('error');
+            errorElement.innerText = '';
+            const currentLang = document.getElementById('languageSelector').value;
+            const langData = languages[currentLang];
+            if (isNaN(rsValue) || isNaN(ageValue) || isNaN(sexValue)) {
+                errorElement.innerText = langData.errorNaN;
+                return;
+            }
+            if (rsValue < 0 || rsValue > 1) {
+                errorElement.innerText = langData.errorRsRange;
+                return;
+            }
+            const predictedProbability = logisticRegressionPredict(rsValue, ageValue, sexValue);
+            document.getElementById('result').innerText = langData.resultPrefix + predictedProbability.toFixed(4);
+        }
+        // 绑定预测按钮的点击事件
+        document.getElementById('predictButton').addEventListener('click', predict);
+        // 初始语言设置
+        changeLanguage();
+    </script>
+</body>
+</html>
