@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>黎家民 - 个人简历网站</title>
+  <style>
+    /* Reset & base */
+    body, h1, h2, h3, p, ul, li, a {
+      margin: 0; padding: 0; font-family: "Helvetica Neue", Arial, sans-serif;
+      color: #333;
+    }
+    body {
+      background-color: #f8f9fa;
+      line-height: 1.6;
+      padding: 20px;
+    }
+    a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Container */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 30px 40px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 2.8rem;
+      color: #007BFF;
+      margin-bottom: 0.3rem;
+    }
+    header p {
+      font-size: 1.2rem;
+      color: #555;
+      font-weight: 500;
+    }
+
+    section {
+      margin-bottom: 2.5rem;
+    }
+    section h2 {
+      border-bottom: 3px solid #007BFF;
+      padding-bottom: 6px;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+      color: #007BFF;
+    }
+
+    /* Basic info */
+    .basic-info p {
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    /* Lists */
+    ul {
+      list-style: disc inside;
+      margin-left: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    li {
+      margin-bottom: 0.7rem;
+      font-size: 1rem;
+    }
+
+    /* Skill tags */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .tag {
+      background: #e9ecef;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.95rem;
+      color: #444;
+      user-select: none;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 3rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      header h1 {
+        font-size: 2.2rem;
+      }
+      section h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <header>
+      <h1>黎家民</h1>
+      <p>医学编辑 ｜ 医学图像智能分析 ｜ AI训练师（医学方向）</p>
+    </header>
+
+    <section class="basic-info">
+      <h2>基本信息</h2>
+      <p>🎂 年龄：21岁</p>
+      <p>🎓 广东医科大学 · 本科在读（医学影像学）2022.09 - 2027.06</p>
+      <p>📞 电话：13750319071</p>
+      <p>📧 邮箱：<a href="mailto:2373339157@qq.com">2373339157@qq.com</a></p>
+      <p>🌐 个人主页：<a href="https://shige12.github.io" target="_blank" rel="noopener noreferrer">shige12.github.io</a></p>
+      <p>📚 GPA：3.2 | 英语六级：535分</p>
+    </section>
+
+    <section>
+      <h2>科研经历</h2>
+      <ul>
+        <li>
+          <strong>Thymoma Risk Prediction with Radiomics Differences</strong> （Scientific Reports已发表）<br />
+          负责CT影像数据收集、预处理及PyRadiomics特征提取；采用LASSO和Mann-Whitney检验筛选特征；基于多期影像差异构建堆叠模型，评估AUC，绘制Nomogram；参与论文撰写及返修。
+        </li>
+        <li>
+          <strong>Thymoma Habitat Segmentation and Risk Prediction Model</strong> （Medical Physics已发表）<br />
+          利用K-means进行肿瘤内部生境聚类，建立多模型进行风险预测，参与论文撰写与返修。
+        </li>
+        <li>
+          <strong>Integrative Radiomics of Intra- and Peri-Tumoral Features</strong> （Medical Imaging已接收）<br />
+          分析瘤周免疫微环境，提取放射组学特征，构建融合模型，参与论文写作及修改。
+        </li>
+        <li>
+          <strong>Preoperative DBT-based Radiomics for Breast Cancer</strong> （多中心研究）<br />
+          作为第四作者，负责数据收集，参与多中心乳腺癌淋巴结转移预测。
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>项目与竞赛经历</h2>
+      <ul>
+        <li>计算机设计大赛（负责人）—— 省级二等奖</li>
+        <li>2024年大学创新创业项目（负责人）—— 国家级立项</li>
+        <li>2023年大学创新创业项目（成员）—— 国家级立项</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>专业技能</h2>
+      <div class="tags">
+        <div class="tag">Python</div>
+        <div class="tag">PyRadiomics</div>
+        <div class="tag">ITK-SNAP</div>
+        <div class="tag">GitHub</div>
+        <div class="tag">ChatGPT</div>
+        <div class="tag">DeepSeek</div>
+        <div class="tag">Office</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>自我评价</h2>
+      <p>
+        具备扎实的医学影像学专业背景和丰富的CT影像数据分析经验，熟练使用PyRadiomics、ITK-SNAP等工具，掌握Python编程与机器学习算法，能独立完成数据预处理及建模流程。多项科研项目中担任负责人或核心成员，具备良好的科研素养、团队协作和沟通能力。具备较强的学习与解决问题能力，积极主动，责任心强，致力于推动医学图像智能分析和AI应用研究。
+      </p>
+    </section>
+
+    <footer>
+      &copy; 2025 黎家民
+    </footer>
+
+  </div>
+
+</body>
+</html>
